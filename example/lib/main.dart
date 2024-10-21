@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    // initPlatformState();
   }
 
   Future<void> initPlatformState() async {
@@ -43,16 +43,40 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.purple,
+        ),
+        useMaterial3: true,
+      ),
       home: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text('Shizuku Api'),
         ),
-        body: Center(
-          child: Text('Shizuku Access: $_shizukuApiAccess\n'),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            initPlatformState();
+          },
+          child: const Icon(Icons.refresh_rounded),
         ),
-        floatingActionButton: FloatingActionButton(onPressed: () {
-          initPlatformState();
-        }),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('Shizuku Access: $_shizukuApiAccess\n'),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.chevron_right_rounded),
+                onPressed: () {
+                  initPlatformState();
+                },
+                label: const Text('Request Shizuku Access'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

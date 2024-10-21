@@ -1,3 +1,5 @@
+
+
 group = "com.santhoshDsubramani.shizuku_api"
 version = "1.0"
 
@@ -26,7 +28,7 @@ android {
         namespace = "com.santhoshDsubramani.shizuku_api"
     }
 
-    compileSdk = 35
+    compileSdk = 34
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -34,7 +36,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
     }
 
     dependencies {
@@ -42,7 +44,6 @@ android {
         implementation ("dev.rikka.shizuku:provider:13.1.5")
         testImplementation("junit:junit:4.13.2")
         testImplementation("org.mockito:mockito-core:5.0.0")
-
     }
 
     testOptions {
