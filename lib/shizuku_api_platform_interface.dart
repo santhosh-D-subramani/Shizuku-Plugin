@@ -23,7 +23,7 @@ abstract class ShizukuApiPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<String?> getPlatformVersion() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+  Future<bool?> checkPermission() {
+    throw UnimplementedError('checkPermission() has not been implemented.');
   }
 }

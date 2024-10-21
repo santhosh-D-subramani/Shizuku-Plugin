@@ -24,13 +24,32 @@ public class ShizukuApiPlugin implements FlutterPlugin, MethodCallHandler {
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
+    if (call.method.equals("checkPermission")) {
+      int requestCode = call.argument("requestCode");
+      boolean isGranted = checkPermission(requestCode);
+      result.success(isGranted);
     } else {
       result.notImplemented();
     }
   }
+  private boolean checkPermission(int code) {
+    if (Shizuku.isPreV11()) {
+      // Pre-v11 is unsupported
+      return false;
+    }
 
+    if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+      // Granted
+      return true;
+    } else if (Shizuku.shouldShowRequestPermissionRationale()) {
+      // User denied permission and chose "Don't ask again"
+      return false;
+    } else {
+      // Request the permission
+      Shizuku.requestPermission(code);
+      return false;
+    }
+  }
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     channel.setMethodCallHandler(null);

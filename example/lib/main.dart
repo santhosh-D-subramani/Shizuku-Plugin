@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  bool _platformVersion = false;
   final _shizukuApiPlugin = ShizukuApi();
 
   @override
@@ -27,14 +27,13 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
+    bool checkPermission;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      platformVersion =
-          await _shizukuApiPlugin.getPlatformVersion() ?? 'Unknown platform version';
+      checkPermission = await _shizukuApiPlugin.checkPermission() ?? false;
     } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      checkPermission = false;
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -43,7 +42,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+      _platformVersion = checkPermission;
     });
   }
 

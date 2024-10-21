@@ -10,8 +10,10 @@ class MethodChannelShizukuApi extends ShizukuApiPlatform {
   final methodChannel = const MethodChannel('shizuku_api');
 
   @override
-  Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
+  Future<bool?> checkPermission() async {
+    const int requestCode = 123;
+    final isGranted = await methodChannel
+        .invokeMethod<bool>('checkPermission', {'requestCode': requestCode});
+    return isGranted;
   }
 }
