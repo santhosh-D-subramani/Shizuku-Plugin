@@ -7,9 +7,8 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockShizukuApiPlatform
     with MockPlatformInterfaceMixin
     implements ShizukuApiPlatform {
-
   @override
-  Future<String?> getPlatformVersion() => Future.value('42');
+  Future<bool?> checkPermission() => Future.value(false);
 }
 
 void main() {
@@ -24,6 +23,6 @@ void main() {
     MockShizukuApiPlatform fakePlatform = MockShizukuApiPlatform();
     ShizukuApiPlatform.instance = fakePlatform;
 
-    expect(await shizukuApiPlugin.getPlatformVersion(), '42');
+    expect(await shizukuApiPlugin.checkPermission(), '42');
   });
 }

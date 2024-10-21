@@ -1,13 +1,14 @@
 package com.santhoshDsubramani.shizuku_api;
 
 import androidx.annotation.NonNull;
+import  android.content.pm.PackageManager;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-
+import rikka.shizuku.Shizuku;
 /** ShizukuApiPlugin */
 public class ShizukuApiPlugin implements FlutterPlugin, MethodCallHandler {
   /// The MethodChannel that will the communication between Flutter and native Android
