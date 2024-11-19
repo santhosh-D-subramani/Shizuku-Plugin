@@ -6,7 +6,7 @@ A  Flutter Plugin that gives access to shizuku api.
 - Im not good in Java/ Kotlin, Somehow done this plugin if you find any improvements? check out my github 
 
 # Install
-- ```
+```
   
   flutter pub add shizuku_api
   
@@ -37,6 +37,14 @@ A  Flutter Plugin that gives access to shizuku api.
    ```
 # Usage
 
+- Important: DO THIS BEFORE CALLING ANY OTHER 
+- check if Shizuku is running with this before using other calls
+- 
+- ```
+  bool isBinderRunning = await _shizukuApiPlugin.pingBinder() ?? false;
+  
+  ```
+
 - Request Shizuku Access
   - !! [Shizuku](https://shizuku.rikka.app/) should be installed and running
   - ```
@@ -46,7 +54,7 @@ A  Flutter Plugin that gives access to shizuku api.
     ```
 - Run Commands
   - ! root environment(su) is not tested 
-  - can run basic commands (working fine)
+  - can run basic ADB commands (working fine)
   - ```
     String command = 'ls';
     await _shizukuApiPlugin.runCommand(command); // returns all folders as List<String>

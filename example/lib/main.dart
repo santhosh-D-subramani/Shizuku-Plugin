@@ -41,6 +41,12 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<bool> isBinderRunning() async {
+    bool isBinderRunning = await _shizukuApiPlugin.pingBinder() ?? false;
+    print('isBinderRunning$isBinderRunning');
+    return isBinderRunning;
+  }
+
   void runCommand(String command) async {
     output = await _shizukuApiPlugin.runCommand(command) ?? [];
     setState(() {});
@@ -68,8 +74,12 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Shizuku Api'),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            initPlatformState();
+          onPressed: () async {
+            bool i = await isBinderRunning();
+            if (i == true) {
+              print(i);
+              initPlatformState();
+            }
           },
           child: const Icon(Icons.refresh_rounded),
         ),
@@ -81,8 +91,12 @@ class _MyAppState extends State<MyApp> {
               Text('Shizuku Access: $_shizukuApiAccess\n'),
               ElevatedButton.icon(
                 icon: const Icon(Icons.chevron_right_rounded),
-                onPressed: () {
-                  initPlatformState();
+                onPressed: () async {
+                  bool i = await isBinderRunning();
+                  print(i);
+                  if (i == true) {
+                    initPlatformState();
+                  }
                 },
                 label: const Text('Request Shizuku Access'),
               ),

@@ -27,6 +27,10 @@ abstract class ShizukuApiPlatform extends PlatformInterface {
     throw UnimplementedError('checkPermission() has not been implemented.');
   }
 
+  Future<bool?> pingBinder() {
+    throw UnimplementedError('pingBinder() has not been implemented.');
+  }
+
   Future<List<String>?> runCommand(String command) {
     throw UnimplementedError('runCommand() has not been implemented. $command');
   }

@@ -18,6 +18,12 @@ class MethodChannelShizukuApi extends ShizukuApiPlatform {
   }
 
   @override
+  Future<bool?> pingBinder() async {
+    final isGranted = await methodChannel.invokeMethod<bool>('pingBinder');
+    return isGranted;
+  }
+
+  @override
   Future<List<String>?> runCommand(String command) async {
     final List<dynamic>? output =
         await methodChannel.invokeMethod<List<dynamic>>(
@@ -27,12 +33,6 @@ class MethodChannelShizukuApi extends ShizukuApiPlatform {
 
     final List<String>? typedOutput =
         output?.map((item) => item.toString()).toList();
-
-    print('output.runtimeType ${output.runtimeType}');
-    print('typedOutput $typedOutput');
-    print('typedOutputType ${typedOutput.runtimeType}');
-    print('[I]  MethodChannelShizukuApi.runCommand');
-    print('[I]  output $output');
 
     return typedOutput;
   }

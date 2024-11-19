@@ -11,6 +11,10 @@ class ShizukuApi {
     return ShizukuApiPlatform.instance.checkPermission();
   }
 
+  Future<bool?> pingBinder() {
+    return ShizukuApiPlatform.instance.pingBinder();
+  }
+
   Future<List<String>?> runCommand(String command) {
     return ShizukuApiPlatform.instance.runCommand(command);
   }
