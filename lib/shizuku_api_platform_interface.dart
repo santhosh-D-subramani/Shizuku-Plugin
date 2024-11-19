@@ -26,4 +26,8 @@ abstract class ShizukuApiPlatform extends PlatformInterface {
   Future<bool?> checkPermission() {
     throw UnimplementedError('checkPermission() has not been implemented.');
   }
+
+  Future<List<String>?> runCommand(String command) {
+    throw UnimplementedError('runCommand() has not been implemented. $command');
+  }
 }

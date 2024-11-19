@@ -10,4 +10,8 @@ class ShizukuApi {
   Future<bool?> checkPermission() {
     return ShizukuApiPlatform.instance.checkPermission();
   }
+
+  Future<List<String>?> runCommand(String command) {
+    return ShizukuApiPlatform.instance.runCommand(command);
+  }
 }

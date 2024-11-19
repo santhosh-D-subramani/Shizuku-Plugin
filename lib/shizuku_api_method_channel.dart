@@ -16,4 +16,24 @@ class MethodChannelShizukuApi extends ShizukuApiPlatform {
         .invokeMethod<bool>('checkPermission', {'requestCode': requestCode});
     return isGranted;
   }
+
+  @override
+  Future<List<String>?> runCommand(String command) async {
+    final List<dynamic>? output =
+        await methodChannel.invokeMethod<List<dynamic>>(
+      'runCommand',
+      {'command': command},
+    );
+
+    final List<String>? typedOutput =
+        output?.map((item) => item.toString()).toList();
+
+    print('output.runtimeType ${output.runtimeType}');
+    print('typedOutput $typedOutput');
+    print('typedOutputType ${typedOutput.runtimeType}');
+    print('[I]  MethodChannelShizukuApi.runCommand');
+    print('[I]  output $output');
+
+    return typedOutput;
+  }
 }

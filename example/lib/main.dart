@@ -19,10 +19,11 @@ class _MyAppState extends State<MyApp> {
   bool _shizukuApiAccess = false;
   final _shizukuApiPlugin = ShizukuApi();
 
+  var controller = TextEditingController(text: 'pm list packages');
+  List<String> output = [];
   @override
   void initState() {
     super.initState();
-    // initPlatformState();
   }
 
   Future<void> initPlatformState() async {
@@ -40,6 +41,11 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void runCommand(String command) async {
+    output = await _shizukuApiPlugin.runCommand(command) ?? [];
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -49,10 +55,16 @@ class _MyAppState extends State<MyApp> {
         ),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          brightness: Brightness.dark,
+          seedColor: Colors.purple,
+        ),
+        useMaterial3: true,
+      ),
       home: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text('Shizuku Api'),
         ),
         floatingActionButton: FloatingActionButton(
@@ -74,6 +86,30 @@ class _MyAppState extends State<MyApp> {
                 },
                 label: const Text('Request Shizuku Access'),
               ),
+              TextField(
+                decoration: const InputDecoration(
+                    label: Text('Command'),
+                    helperText: 'eg: ls , pm list packages'),
+                controller: controller,
+              ),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.chevron_right_rounded),
+                onPressed: () {
+                  runCommand(controller.text);
+                },
+                label: const Text('Run Command'),
+              ),
+              const Text('Logs:'),
+              Expanded(
+                  child: ListView.builder(
+                      itemCount: output.length,
+                      itemBuilder: (context, index) {
+                        final currentItem = output[index].replaceAll("'", "");
+                        return ListTile(
+                          title: Text(currentItem),
+                        );
+                      })),
+              // Text('${output}')
             ],
           ),
         ),

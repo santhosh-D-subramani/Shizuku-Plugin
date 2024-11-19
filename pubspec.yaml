@@ -1,6 +1,6 @@
 name: shizuku_api
 description:  "A Flutter Plugin that gives access to shizuku api."
-version: 0.0.2
+version: 1.0.0
 homepage: https://github.com/santhosh-D-subramani/Shizuku-Plugin/
 environment:
   sdk: ^3.5.3
