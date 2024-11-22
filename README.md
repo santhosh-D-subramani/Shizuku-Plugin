@@ -21,7 +21,7 @@ A  Flutter Plugin that gives access to shizuku api.
 
 
 - In AndroidManifest.xml add this inside application tag
--  ```
+```
    <application>
    <!-- other code>
 
@@ -38,25 +38,25 @@ A  Flutter Plugin that gives access to shizuku api.
 # Usage
 
 - Important: DO THIS BEFORE CALLING ANY OTHER 
-- check if Shizuku is running with this before using other calls
+- check if Shizuku is running first
 - 
-- ```
+```
   bool isBinderRunning = await _shizukuApiPlugin.pingBinder() ?? false;
   
   ```
 
 - Request Shizuku Access
   - !! [Shizuku](https://shizuku.rikka.app/) should be installed and running
-  - ```
+  ```
     final _shizukuApiPlugin = ShizukuApi();
     bool requestPermission = await  _shizukuApiPlugin.checkPermission(); // triggers shizuku popup
     print(requestPermission); // if allowed returns true else false
     ```
 - Run Commands
   - ! root environment(su) is not tested 
-  - can run basic ADB commands (working fine)
-  - ```
-    String command = 'ls';
-    await _shizukuApiPlugin.runCommand(command); // returns all folders as List<String>
+  - can run ADB shell commands (working fine)
+  ```
+    String command = 'pm uninstall --user 0 com.android.chrome';
+    await _shizukuApiPlugin.runCommand(command); // returns success if Uninstalled system app / Failure if failed
     ```
 

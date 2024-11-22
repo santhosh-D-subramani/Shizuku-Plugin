@@ -31,7 +31,12 @@ abstract class ShizukuApiPlatform extends PlatformInterface {
     throw UnimplementedError('pingBinder() has not been implemented.');
   }
 
-  Future<List<String>?> runCommand(String command) {
+  Future<String?> runCommand(String command) {
     throw UnimplementedError('runCommand() has not been implemented. $command');
   }
+
+  // Future<List<String>?> runCommands(String command) {
+  //   throw UnimplementedError(
+  //       'runCommands() has not been implemented. $command');
+  // }
 }

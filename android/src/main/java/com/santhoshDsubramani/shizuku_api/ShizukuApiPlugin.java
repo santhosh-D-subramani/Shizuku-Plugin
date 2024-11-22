@@ -28,7 +28,6 @@ public class ShizukuApiPlugin implements FlutterPlugin, MethodCallHandler {
     /// when the Flutter Engine is detached from the Activity
     private MethodChannel channel;
     private ShizukuShell mShizukuShell = null;
-    private List<String> mResult = new ArrayList<>();
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
@@ -43,36 +42,26 @@ public class ShizukuApiPlugin implements FlutterPlugin, MethodCallHandler {
             int requestCode = call.argument("requestCode");
             boolean isGranted = checkPermission(requestCode);
             result.success(isGranted);
-        } else if (call.method.equals("runCommand")) {
-            mResult = runCommand(call.argument("command"));
-            List<String> out = mResult.stream()
-                    .map(item -> "'" + item + "'") // Use single quotes
-                    .collect(Collectors.toList());
-            if (mShizukuShell != null && mShizukuShell.isBusy()) {
-                mShizukuShell.destroy();
-            }
-            result.success(out);
+        }else if (call.method.equals("runCommand")) {
+            String command = call.argument("command");
+            System.out.println("command = " + command);
+            ShizukuShell shizukuShell = new ShizukuShell(command);
 
-        } else if (call.method.equals("pingBinder")) {
+            if (mShizukuShell != null && mShizukuShell.isBusy()) {
+                shizukuShell.destroy();
+            }
+
+            String resultString = shizukuShell.execCommands();
+            result.success(resultString);
+        }
+
+         else if (call.method.equals("pingBinder")) {
 
              result.success(isBinderRunning());
         } else {
             result.notImplemented();
         }
     }
-
-
-
-private List<String> runCommand(String finalCommand) {
-
-    if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-
-        mShizukuShell = new ShizukuShell(mResult, finalCommand);
-        mShizukuShell.exec();
-        return mResult;
-    }
-    return mResult;
-}
 
     private boolean isBinderRunning(){
        if(Shizuku.pingBinder()){

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -18,9 +19,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _shizukuApiAccess = false;
   final _shizukuApiPlugin = ShizukuApi();
+  var singleOutputController =
+      TextEditingController(text: 'pm uninstall --user 0 com.android.chrome');
 
-  var controller = TextEditingController(text: 'pm list packages');
-  List<String> output = [];
+  String outputString = '';
   @override
   void initState() {
     super.initState();
@@ -48,7 +50,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void runCommand(String command) async {
-    output = await _shizukuApiPlugin.runCommand(command) ?? [];
+    outputString = await _shizukuApiPlugin.runCommand(command) ?? '';
     setState(() {});
   }
 
@@ -93,7 +95,9 @@ class _MyAppState extends State<MyApp> {
                 icon: const Icon(Icons.chevron_right_rounded),
                 onPressed: () async {
                   bool i = await isBinderRunning();
-                  print(i);
+                  if (kDebugMode) {
+                    print(i);
+                  }
                   if (i == true) {
                     initPlatformState();
                   }
@@ -103,27 +107,17 @@ class _MyAppState extends State<MyApp> {
               TextField(
                 decoration: const InputDecoration(
                     label: Text('Command'),
-                    helperText: 'eg: ls , pm list packages'),
-                controller: controller,
+                    helperText: 'eg: pm uninstall --user 0 <packageName>'),
+                controller: singleOutputController,
               ),
               ElevatedButton.icon(
                 icon: const Icon(Icons.chevron_right_rounded),
                 onPressed: () {
-                  runCommand(controller.text);
+                  runCommand(singleOutputController.text);
                 },
                 label: const Text('Run Command'),
               ),
-              const Text('Logs:'),
-              Expanded(
-                  child: ListView.builder(
-                      itemCount: output.length,
-                      itemBuilder: (context, index) {
-                        final currentItem = output[index].replaceAll("'", "");
-                        return ListTile(
-                          title: Text(currentItem),
-                        );
-                      })),
-              // Text('${output}')
+              Text(outputString)
             ],
           ),
         ),

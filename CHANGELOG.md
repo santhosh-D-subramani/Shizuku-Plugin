@@ -14,3 +14,7 @@
 ## 1.0.1
 
 - added check for Shizuku Binder attached
+
+## 1.1.0
+
+- converted List<String> output to String

@@ -15,7 +15,11 @@ class ShizukuApi {
     return ShizukuApiPlatform.instance.pingBinder();
   }
 
-  Future<List<String>?> runCommand(String command) {
+  Future<String?> runCommand(String command) {
     return ShizukuApiPlatform.instance.runCommand(command);
   }
+
+  // Future<List<String>?> runCommands(String command) {
+  //   return ShizukuApiPlatform.instance.runCommands(command);
+  // }
 }

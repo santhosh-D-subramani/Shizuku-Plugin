@@ -19,21 +19,28 @@ class MethodChannelShizukuApi extends ShizukuApiPlatform {
 
   @override
   Future<bool?> pingBinder() async {
-    final isGranted = await methodChannel.invokeMethod<bool>('pingBinder');
-    return isGranted;
+    final isRunning = await methodChannel.invokeMethod<bool>('pingBinder');
+    return isRunning;
   }
 
   @override
-  Future<List<String>?> runCommand(String command) async {
-    final List<dynamic>? output =
-        await methodChannel.invokeMethod<List<dynamic>>(
-      'runCommand',
-      {'command': command},
-    );
-
-    final List<String>? typedOutput =
-        output?.map((item) => item.toString()).toList();
-
-    return typedOutput;
+  Future<String?> runCommand(String command) async {
+    final output = await methodChannel
+        .invokeMethod<String>('runCommand', {'command': command});
+    return output;
   }
+
+  // @override
+  // Future<List<String>?> runCommands(String command) async {
+  //   final List<dynamic>? output =
+  //       await methodChannel.invokeMethod<List<dynamic>>(
+  //     'runCommands',
+  //     {'command': command},
+  //   );
+  //
+  //   final List<String>? typedOutput =
+  //       output?.map((item) => item.toString()).toList();
+  //
+  //   return typedOutput;
+  // }
 }

@@ -3,6 +3,8 @@ package com.santhoshDsubramani.shizuku_api;
 
 
 
+import android.os.Build;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -10,53 +12,60 @@ import java.util.List;
 import rikka.shizuku.Shizuku;
 import rikka.shizuku.ShizukuRemoteProcess;
 import rikka.shizuku.ShizukuBinderWrapper;
-
 public class ShizukuShell {
 
-    private static List<String> mOutput;
     private static ShizukuRemoteProcess mProcess = null;
     private static String mCommand;
     private static String mDir = "/";
 
-    public ShizukuShell(
-           List<String> output,
-            String command) {
-      mOutput = output;
+    public ShizukuShell(String command) {
         mCommand = command;
     }
 
     public boolean isBusy() {
-        return mOutput != null && !mOutput.isEmpty() && !mOutput.get(mOutput.size() - 1).equals("aShell: Finish");
+            return mProcess != null;
+
     }
 
-    public void exec() {
+    public String execCommands() {
+        StringBuilder outputBuilder = new StringBuilder();
         try {
-            mProcess = Shizuku.newProcess(new String[] {"sh", "-c", mCommand}, null, mDir);
+            System.out.println("mCommand = " + mCommand);
+            if (mCommand == null || mCommand.isEmpty()) {
+                throw new IllegalArgumentException("Command cannot be null or empty");
+            }
+
+            mProcess = Shizuku.newProcess(new String[]{"sh", "-c", mCommand}, null, mDir);
             BufferedReader mInput = new BufferedReader(new InputStreamReader(mProcess.getInputStream()));
             BufferedReader mError = new BufferedReader(new InputStreamReader(mProcess.getErrorStream()));
 
             String line;
+            // Read standard output
             while ((line = mInput.readLine()) != null) {
-                System.out.println("line while ((line = mInput.readLine()) != null) = " + line);
-                mOutput.add(line);
+                outputBuilder.append(line).append("\n");
             }
+            // Read error output
             while ((line = mError.readLine()) != null) {
-                System.out.println("line while ((line = mError.readLine()) != null)= " + line);
-                mOutput.add("<font color=#FF0000>" + line + "</font>");
+                outputBuilder.append("<font color=#FF0000>").append(line).append("</font>\n");
             }
+
             mProcess.waitFor();
-        } catch (Exception ignored) {
+        } catch (IllegalArgumentException e) {
+            outputBuilder.append("Error: ").append(e.getMessage());
+        } catch (Exception e) {
+            outputBuilder.append("Unexpected error: ").append(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (mProcess != null) {
+                mProcess.destroy();
+            }
+        }
+        return outputBuilder.toString().trim();
+    }
 
-
-        }  finally {
+    public void destroy() {
         if (mProcess != null) {
             mProcess.destroy();
         }
     }
-    }
-
-    public void destroy() {
-        if (mProcess != null) mProcess.destroy();
-    }
-
 }
