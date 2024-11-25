@@ -1,14 +1,14 @@
-# 🔌 Shizuku API Flutter Plugin
+# 🔌 Shizuku API Flutter Plugin  
 
-Access the **Shizuku API** seamlessly in your Flutter apps! 🚀
+Access the **Shizuku API** seamlessly in your Flutter apps! 🚀  
 
 
-## 🌟 About
+## 🌟 About  
 This plugin powers my Play Store application [**System App Remover**](https://play.google.com/store/apps/details?id=com.santhoshDsubramani.systemappremover), which allows users to remove system apps (*bloatware*) effortlessly without requiring root access or a computer(Android 10 and below still needs computer to run Shizuku).
 
 
-## ⚡ Installation
-Add the plugin to your project:
+## ⚡ Installation  
+Add the plugin to your project:  
 ```
   
   flutter pub add shizuku_api
@@ -20,7 +20,7 @@ Add the plugin to your project:
 
 ## 🔧 Configuration
 📝 **app/build.gradle**
-- minSdk should be >= 24
+  - minSdk should be >= 24
 
 📝 **AndroidManifest.xml** add this inside application tag:
 
@@ -50,7 +50,7 @@ Add the plugin to your project:
   ```
 
 - 🛠️ **check Shizuku Permission**
-
+  
   ```
     final _shizukuApiPlugin = ShizukuApi();
 
@@ -76,8 +76,9 @@ Add the plugin to your project:
 - 💻 **Run Commands**
   - ⚡ **Root environment (su)** is not tested
   - ✅ Can run **ADB shell commands** (working fine)
-
+    
   ```
     String command = 'pm uninstall --user 0 com.android.chrome';
     await _shizukuApiPlugin.runCommand(command); // returns success if Uninstalled system app / Failure if failed
     ```
+
