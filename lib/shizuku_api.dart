@@ -5,7 +5,7 @@ class ShizukuApi {
   /// * Shizuku must be installed on the device and running
   /// ```dart
   ///  final shizukuApiPlugin = ShizukuApi();
-  /// await shizukuApiPlugin.checkPermission()
+  /// await shizukuApiPlugin.requestPermission()
   /// ```
   Future<bool?> requestPermission() {
     return ShizukuApiPlatform.instance.requestPermission();
