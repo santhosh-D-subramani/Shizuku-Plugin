@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -17,10 +16,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _shizukuApiAccess = false;
+  bool _isShizukuPermissionGranted = false;
   final _shizukuApiPlugin = ShizukuApi();
-  var singleOutputController =
-      TextEditingController(text: 'pm uninstall --user 0 com.android.chrome');
+  var singleOutputController = TextEditingController(text: 'wm size');
 
   String outputString = '';
   @override
@@ -28,10 +26,11 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  Future<void> initPlatformState() async {
+  Future<void> requestPermission() async {
     bool shizukuApiPermission;
     try {
-      shizukuApiPermission = await _shizukuApiPlugin.checkPermission() ?? false;
+      shizukuApiPermission =
+          await _shizukuApiPlugin.requestPermission() ?? false;
     } on PlatformException {
       shizukuApiPermission = false;
     }
@@ -39,14 +38,20 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _shizukuApiAccess = shizukuApiPermission;
+      _isShizukuPermissionGranted = shizukuApiPermission;
     });
   }
 
   Future<bool> isBinderRunning() async {
     bool isBinderRunning = await _shizukuApiPlugin.pingBinder() ?? false;
-    print('isBinderRunning$isBinderRunning');
+    print('isBinderRunning $isBinderRunning');
     return isBinderRunning;
+  }
+
+  Future<bool> checkPermission() async {
+    bool isShizukuGranted = await _shizukuApiPlugin.checkPermission() ?? false;
+    print('checkPermission() $isShizukuGranted');
+    return isShizukuGranted;
   }
 
   void runCommand(String command) async {
@@ -57,57 +62,40 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.purple,
-        ),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          brightness: Brightness.dark,
-          seedColor: Colors.purple,
-        ),
-        useMaterial3: true,
-      ),
+      theme: lightMode,
+      darkTheme: darkMode,
       home: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: const Text('Shizuku Api'),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            bool i = await isBinderRunning();
-            if (i == true) {
-              print(i);
-              initPlatformState();
-            }
-          },
-          child: const Icon(Icons.refresh_rounded),
-        ),
-        body: Center(
+        appBar: buildAppBar(),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Shizuku Access: $_shizukuApiAccess\n'),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.chevron_right_rounded),
+              ElevatedButton(
                 onPressed: () async {
-                  bool i = await isBinderRunning();
-                  if (kDebugMode) {
-                    print(i);
-                  }
-                  if (i == true) {
-                    initPlatformState();
+                  bool isShizukuRunning = await isBinderRunning();
+                  if (isShizukuRunning == true) {
+                    _isShizukuPermissionGranted = await checkPermission();
+                    setState(() {});
                   }
                 },
-                label: const Text('Request Shizuku Access'),
+                child: Text(
+                    'Check Shizuku Permission Granted: $_isShizukuPermissionGranted'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  bool i = await isBinderRunning();
+                  if (i == true) {
+                    requestPermission();
+                  }
+                },
+                child: const Text('Request Shizuku Permission'),
               ),
               TextField(
                 decoration: const InputDecoration(
                     label: Text('Command'),
-                    helperText: 'eg: pm uninstall --user 0 <packageName>'),
+                    helperText:
+                        'eg: pm uninstall --user 0 <packageName>, wm size'),
                 controller: singleOutputController,
               ),
               ElevatedButton.icon(
@@ -124,4 +112,25 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      centerTitle: true,
+      title: const Text('Shizuku Api'),
+    );
+  }
 }
+
+final lightMode = ThemeData(
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: Colors.purple,
+  ),
+  useMaterial3: true,
+);
+final darkMode = ThemeData(
+  colorScheme: ColorScheme.fromSeed(
+    brightness: Brightness.dark,
+    seedColor: Colors.purple,
+  ),
+  useMaterial3: true,
+);

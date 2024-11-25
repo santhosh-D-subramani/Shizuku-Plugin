@@ -7,12 +7,16 @@ class ShizukuApi {
   ///  final shizukuApiPlugin = ShizukuApi();
   /// await shizukuApiPlugin.checkPermission()
   /// ```
-  Future<bool?> checkPermission() {
-    return ShizukuApiPlatform.instance.checkPermission();
+  Future<bool?> requestPermission() {
+    return ShizukuApiPlatform.instance.requestPermission();
   }
 
   Future<bool?> pingBinder() {
     return ShizukuApiPlatform.instance.pingBinder();
+  }
+
+  Future<bool?> checkPermission() {
+    return ShizukuApiPlatform.instance.checkPermission();
   }
 
   Future<String?> runCommand(String command) {

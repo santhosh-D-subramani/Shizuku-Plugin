@@ -1,17 +1,12 @@
 package com.santhoshDsubramani.shizuku_api;
 
 
-
-
-import android.os.Build;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.List;
 
 import rikka.shizuku.Shizuku;
 import rikka.shizuku.ShizukuRemoteProcess;
-import rikka.shizuku.ShizukuBinderWrapper;
+
 public class ShizukuShell {
 
     private static ShizukuRemoteProcess mProcess = null;
@@ -23,7 +18,7 @@ public class ShizukuShell {
     }
 
     public boolean isBusy() {
-            return mProcess != null;
+        return mProcess != null;
 
     }
 

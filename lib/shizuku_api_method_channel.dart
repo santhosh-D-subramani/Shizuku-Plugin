@@ -10,16 +10,22 @@ class MethodChannelShizukuApi extends ShizukuApiPlatform {
   final methodChannel = const MethodChannel('shizuku_api');
 
   @override
-  Future<bool?> checkPermission() async {
+  Future<bool?> requestPermission() async {
     const int requestCode = 123;
     final isGranted = await methodChannel
-        .invokeMethod<bool>('checkPermission', {'requestCode': requestCode});
+        .invokeMethod<bool>('requestPermission', {'requestCode': requestCode});
     return isGranted;
   }
 
   @override
   Future<bool?> pingBinder() async {
     final isRunning = await methodChannel.invokeMethod<bool>('pingBinder');
+    return isRunning;
+  }
+
+  @override
+  Future<bool?> checkPermission() async {
+    final isRunning = await methodChannel.invokeMethod<bool>('checkPermission');
     return isRunning;
   }
 

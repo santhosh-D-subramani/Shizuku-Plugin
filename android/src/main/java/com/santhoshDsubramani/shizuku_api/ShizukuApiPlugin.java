@@ -38,60 +38,74 @@ public class ShizukuApiPlugin implements FlutterPlugin, MethodCallHandler {
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-        if (call.method.equals("checkPermission")) {
+        if (call.method.equals("requestPermission")) {
             int requestCode = call.argument("requestCode");
-            boolean isGranted = checkPermission(requestCode);
+            boolean isGranted = requestPermission(requestCode);
             result.success(isGranted);
-        }else if (call.method.equals("runCommand")) {
-            String command = call.argument("command");
-            System.out.println("command = " + command);
-            ShizukuShell shizukuShell = new ShizukuShell(command);
+        } else if (call.method.equals("runCommand")) {
+            result.success(runCommand(call.argument("command")));
+        } else if (call.method.equals("pingBinder")) {
 
-            if (mShizukuShell != null && mShizukuShell.isBusy()) {
-                shizukuShell.destroy();
-            }
-
-            String resultString = shizukuShell.execCommands();
-            result.success(resultString);
-        }
-
-         else if (call.method.equals("pingBinder")) {
-
-             result.success(isBinderRunning());
+            result.success(isBinderRunning());
+        } else if (call.method.equals("checkPermission")) {
+            boolean isGranted = Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED;
+            result.success(isGranted);
         } else {
             result.notImplemented();
         }
     }
 
-    private boolean isBinderRunning(){
-       if(Shizuku.pingBinder()){
-           return true;
-       }else {
-           return false;
-       }
+    /**
+     * Run a command using Shizuku.
+     *
+     * @param command Shell Command to run
+     * @return Outputs a String
+     */
+    private String runCommand(String command) {
+        System.out.println("command = " + command);
+        ShizukuShell shizukuShell = new ShizukuShell(command);
+        if (mShizukuShell != null && mShizukuShell.isBusy()) {
+            shizukuShell.destroy();
+        }
+        return shizukuShell.execCommands();
     }
 
-private boolean checkPermission(int code) {
-    if (Shizuku.isPreV11()) {
-        // Pre-v11 is unsupported
-        return false;
+    /**
+     * Check if Shizuku is running.
+     *
+     * @return true if Shizuku is running, false if not
+     */
+    private boolean isBinderRunning() {
+        return Shizuku.pingBinder();
     }
 
-    if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-        // Granted
-        return true;
-    } else if (Shizuku.shouldShowRequestPermissionRationale()) {
-        // User denied permission and chose "Don't ask again"
-        return false;
-    } else {
-        // Request the permission
-        Shizuku.requestPermission(code);
-        return false;
-    }
-}
+    /**
+     * Request Shizuku permission.
+     *
+     * @param code Request code
+     * @return true if permission granted, false if not
+     */
+    private boolean requestPermission(int code) {
+        if (Shizuku.isPreV11()) {
+            // Pre-v11 is unsupported
+            return false;
+        }
 
-@Override
-public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    channel.setMethodCallHandler(null);
-}
+        if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+            // Granted
+            return true;
+        } else if (Shizuku.shouldShowRequestPermissionRationale()) {
+            // User denied permission and chose "Don't ask again"
+            return false;
+        } else {
+            // Request the permission
+            Shizuku.requestPermission(code);
+            return false;
+        }
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        channel.setMethodCallHandler(null);
+    }
 }

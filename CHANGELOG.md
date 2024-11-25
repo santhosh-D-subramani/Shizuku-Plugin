@@ -18,3 +18,7 @@
 ## 1.1.0
 
 - converted List<String> output to String
+
+## 1.2.0
+
+- separated requesting permission into checkPermission(), requestPermission()

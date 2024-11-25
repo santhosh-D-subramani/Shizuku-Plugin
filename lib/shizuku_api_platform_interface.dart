@@ -23,12 +23,16 @@ abstract class ShizukuApiPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<bool?> checkPermission() {
+  Future<bool?> requestPermission() {
     throw UnimplementedError('checkPermission() has not been implemented.');
   }
 
   Future<bool?> pingBinder() {
     throw UnimplementedError('pingBinder() has not been implemented.');
+  }
+
+  Future<bool?> checkPermission() {
+    throw UnimplementedError('permissionBool() has not been implemented.');
   }
 
   Future<String?> runCommand(String command) {
