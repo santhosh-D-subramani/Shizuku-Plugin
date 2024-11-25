@@ -4,7 +4,7 @@ Access the **Shizuku API** seamlessly in your Flutter apps! 🚀
 
 
 ## 🌟 About  
-This plugin powers my Play Store application [**System App Remover**](https://play.google.com/store/apps/details?id=com.santhoshDsubramani.systemappremover), which allows users to remove system apps (*bloatware*) effortlessly without requiring root access or a computer.
+This plugin powers my Play Store application [**System App Remover**](https://play.google.com/store/apps/details?id=com.santhoshDsubramani.systemappremover), which allows users to remove system apps (*bloatware*) effortlessly without requiring root access or a computer(Android 10 and below still needs computer to run Shizuku).
 
 
 ## ⚡ Installation  
@@ -22,7 +22,7 @@ Add the plugin to your project:
 📝 **app/build.gradle**
   - minSdk should be >= 24
 
-- In **AndroidManifest.xml** add this inside application tag:
+📝 **AndroidManifest.xml** add this inside application tag:
 
 ```
    <application>
@@ -41,24 +41,42 @@ Add the plugin to your project:
 # 🚀 Usage
 
 - ⚠️ **Important:** DO THIS BEFORE CALLING ANY OTHER
+- !! [Shizuku](https://shizuku.rikka.app/) should be installed
 - ✅ Check if **Shizuku** is running first
 
 ```
-  bool isBinderRunning = await _shizukuApiPlugin.pingBinder() ?? false;
+  bool isBinderRunning = await _shizukuApiPlugin.pingBinder() ?? false; // tries to ping shizuku
   
   ```
 
-- 🛠️ **Request Shizuku Access**
-  - !! [Shizuku](https://shizuku.rikka.app/) should be installed and running
+- 🛠️ **check Shizuku Permission**
+  
+  ```
+    final _shizukuApiPlugin = ShizukuApi();
+
+    // checks if shizuku permission granted by user
+    //returns true if previously allowed permission or false if permission declined /never requested
+    bool checkPermission = await  _shizukuApiPlugin.checkPermission();
+
+    print(checkPermission);
+  
+    ```
+- 🛠️ **request Shizuku Permission**
 
   ```
     final _shizukuApiPlugin = ShizukuApi();
-    bool requestPermission = await  _shizukuApiPlugin.checkPermission(); // triggers shizuku popup
-    print(requestPermission); // if allowed returns true else false
-    ```
+  
+    // triggers shizuku popup
+    //returns true if Permission allowed or false if declined
+    bool requestPermission = await  _shizukuApiPlugin.requestPermission(); 
+  
+    print(requestPermission);
+  
+    ```  
 - 💻 **Run Commands**
   - ⚡ **Root environment (su)** is not tested
   - ✅ Can run **ADB shell commands** (working fine)
+    
   ```
     String command = 'pm uninstall --user 0 com.android.chrome';
     await _shizukuApiPlugin.runCommand(command); // returns success if Uninstalled system app / Failure if failed
