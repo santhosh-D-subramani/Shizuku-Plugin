@@ -22,3 +22,7 @@
 ## 1.2.0
 
 - separated requesting permission into checkPermission(), requestPermission()
+
+## 1.2.1
+
+- fixed requestPermission() giving result without listening to user action

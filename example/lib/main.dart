@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -31,6 +32,9 @@ class _MyAppState extends State<MyApp> {
     try {
       shizukuApiPermission =
           await _shizukuApiPlugin.requestPermission() ?? false;
+      if (kDebugMode) {
+        print(shizukuApiPermission);
+      }
     } on PlatformException {
       shizukuApiPermission = false;
     }
@@ -44,13 +48,17 @@ class _MyAppState extends State<MyApp> {
 
   Future<bool> isBinderRunning() async {
     bool isBinderRunning = await _shizukuApiPlugin.pingBinder() ?? false;
-    print('isBinderRunning $isBinderRunning');
+    if (kDebugMode) {
+      print('isBinderRunning $isBinderRunning');
+    }
     return isBinderRunning;
   }
 
   Future<bool> checkPermission() async {
     bool isShizukuGranted = await _shizukuApiPlugin.checkPermission() ?? false;
-    print('checkPermission() $isShizukuGranted');
+    if (kDebugMode) {
+      print('checkPermission() $isShizukuGranted');
+    }
     return isShizukuGranted;
   }
 

@@ -25,7 +25,7 @@ public class ShizukuShell {
     public String execCommands() {
         StringBuilder outputBuilder = new StringBuilder();
         try {
-            System.out.println("mCommand = " + mCommand);
+           // System.out.println("mCommand = " + mCommand);
             if (mCommand == null || mCommand.isEmpty()) {
                 throw new IllegalArgumentException("Command cannot be null or empty");
             }
@@ -41,7 +41,7 @@ public class ShizukuShell {
             }
             // Read error output
             while ((line = mError.readLine()) != null) {
-                outputBuilder.append("<font color=#FF0000>").append(line).append("</font>\n");
+                outputBuilder.append(line).append("\n");
             }
 
             mProcess.waitFor();

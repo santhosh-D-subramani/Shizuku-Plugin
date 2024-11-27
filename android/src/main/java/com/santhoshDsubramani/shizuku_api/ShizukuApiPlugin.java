@@ -11,21 +11,10 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import rikka.shizuku.Shizuku;
 
-import com.santhoshDsubramani.shizuku_api.ShizukuShell;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * ShizukuApiPlugin
  */
 public class ShizukuApiPlugin implements FlutterPlugin, MethodCallHandler {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
     private MethodChannel channel;
     private ShizukuShell mShizukuShell = null;
 
@@ -39,13 +28,11 @@ public class ShizukuApiPlugin implements FlutterPlugin, MethodCallHandler {
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
         if (call.method.equals("requestPermission")) {
-            int requestCode = call.argument("requestCode");
-            boolean isGranted = requestPermission(requestCode);
-            result.success(isGranted);
+            int REQUEST_CODE = call.argument("requestCode");
+            requestPermissionAsync(REQUEST_CODE, result);
         } else if (call.method.equals("runCommand")) {
             result.success(runCommand(call.argument("command")));
         } else if (call.method.equals("pingBinder")) {
-
             result.success(isBinderRunning());
         } else if (call.method.equals("checkPermission")) {
             boolean isGranted = Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED;
@@ -62,7 +49,7 @@ public class ShizukuApiPlugin implements FlutterPlugin, MethodCallHandler {
      * @return Outputs a String
      */
     private String runCommand(String command) {
-        System.out.println("command = " + command);
+        //System.out.println("command = " + command);
         ShizukuShell shizukuShell = new ShizukuShell(command);
         if (mShizukuShell != null && mShizukuShell.isBusy()) {
             shizukuShell.destroy();
@@ -79,29 +66,46 @@ public class ShizukuApiPlugin implements FlutterPlugin, MethodCallHandler {
         return Shizuku.pingBinder();
     }
 
+
     /**
      * Request Shizuku permission.
-     *
      * @param code Request code
-     * @return true if permission granted, false if not
+     * @param result result that sent back to flutter
      */
-    private boolean requestPermission(int code) {
+    private void requestPermissionAsync(int code, Result result) {
         if (Shizuku.isPreV11()) {
             // Pre-v11 is unsupported
-            return false;
+            result.success(false);
+            return;
         }
 
         if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
-            // Granted
-            return true;
-        } else if (Shizuku.shouldShowRequestPermissionRationale()) {
-            // User denied permission and chose "Don't ask again"
-            return false;
-        } else {
-            // Request the permission
-            Shizuku.requestPermission(code);
-            return false;
+            // Permission already granted
+            result.success(true);
+            return;
         }
+
+        if (Shizuku.shouldShowRequestPermissionRationale()) {
+            // User denied permission and chose "Don't ask again"
+            result.success(false);
+            return;
+        }
+
+        // Request permission and listen for results
+        // fix for https://github.com/santhosh-D-subramani/Shizuku-Plugin/issues/2
+        Shizuku.addRequestPermissionResultListener(new Shizuku.OnRequestPermissionResultListener() {
+            @Override
+            public void onRequestPermissionResult(int requestCode, int grantResult) {
+                if (requestCode == code) {
+                    // Cleaning up listener once result is handled
+                    Shizuku.removeRequestPermissionResultListener(this);
+                    boolean isGranted = grantResult == PackageManager.PERMISSION_GRANTED;
+                    result.success(isGranted);
+                }
+            }
+        });
+
+        Shizuku.requestPermission(code);
     }
 
     @Override
