@@ -24,11 +24,8 @@ Add the plugin to your project:
 
 📝 **AndroidManifest.xml** add this inside application tag:
 
-```
+``` xml
    <application>
-   <!-- other code>
-
-   
     <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
@@ -44,14 +41,14 @@ Add the plugin to your project:
 - !! [Shizuku](https://shizuku.rikka.app/) should be installed
 - ✅ Check if **Shizuku** is running first
 
-```
+``` dart
   bool isBinderRunning = await _shizukuApiPlugin.pingBinder() ?? false; // tries to ping shizuku
   
   ```
 
 - 🛠️ **check Shizuku Permission**
   
-  ```
+  ``` dart
     final _shizukuApiPlugin = ShizukuApi();
 
     // checks if shizuku permission granted by user
@@ -63,7 +60,7 @@ Add the plugin to your project:
     ```
 - 🛠️ **request Shizuku Permission**
 
-  ```
+  ``` dart
     final _shizukuApiPlugin = ShizukuApi();
   
     // triggers shizuku popup
@@ -77,7 +74,7 @@ Add the plugin to your project:
   - ⚡ **Root environment (su)** is not tested
   - ✅ Can run **ADB shell commands** (working fine)
     
-  ```
+  ``` dart
     String command = 'pm uninstall --user 0 com.android.chrome';
     await _shizukuApiPlugin.runCommand(command); // returns success if Uninstalled system app / Failure if failed
     ```
