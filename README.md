@@ -37,7 +37,7 @@ Add the plugin to your project:
    ```
 # 🚀 Usage
 
-- ⚠️ **Important:** DO THIS BEFORE CALLING ANY OTHER
+- ⚠️ **Important:** DO THIS BEFORE CALLING ANY OTHER PLUGIN FEATURES
 - !! [Shizuku](https://shizuku.rikka.app/) should be installed
 - ✅ Check if **Shizuku** is running first
 
