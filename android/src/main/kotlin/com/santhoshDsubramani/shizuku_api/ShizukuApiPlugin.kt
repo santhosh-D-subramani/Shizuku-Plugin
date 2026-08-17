@@ -1,7 +1,6 @@
 package com.santhoshDsubramani.shizuku_api
 
 import android.content.pm.PackageManager
-import androidx.annotation.NonNull
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -17,12 +16,12 @@ class ShizukuApiPlugin: FlutterPlugin, MethodCallHandler {
     private lateinit var channel: MethodChannel
     private var mShizukuShell: ShizukuShell? = null
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "shizuku_api")
         channel.setMethodCallHandler(this)
     }
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "requestPermission" -> {
                 val requestCode = call.argument<Int>("requestCode") ?: 0
@@ -49,11 +48,9 @@ class ShizukuApiPlugin: FlutterPlugin, MethodCallHandler {
      * @return Outputs a String
      */
     private fun runCommand(command: String?): String {
-        //System.out.println("command = " + command);
+        mShizukuShell?.destroy()
         val shizukuShell = ShizukuShell(command)
-        if (mShizukuShell != null && mShizukuShell!!.isBusy()) {
-            shizukuShell.destroy()
-        }
+        mShizukuShell = shizukuShell
         return shizukuShell.execCommands()
     }
 
@@ -107,7 +104,7 @@ class ShizukuApiPlugin: FlutterPlugin, MethodCallHandler {
         Shizuku.requestPermission(code)
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 }
