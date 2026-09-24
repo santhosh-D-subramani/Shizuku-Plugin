@@ -1,3 +1,8 @@
+## 1.2.4
+
+- Fixed crash on Android 7.x after answering the permission dialog (`UnsupportedOperationException` from `Shizuku.removeRequestPermissionResultListener`). The plugin now registers a single permission listener once and never removes it.
+- Fixed Android build failing with "Inconsistent JVM Target Compatibility" (Java 11 vs Kotlin 21) on AGP 8, or on AGP 9 with `android.builtInKotlin=false`: `kotlin-android` is applied again when AGP's built-in Kotlin isn't active, and the Kotlin JVM target is set to 11 directly on the compile tasks.
+
 ## 1.2.3
 
 - Improved README documentation structure and formatting

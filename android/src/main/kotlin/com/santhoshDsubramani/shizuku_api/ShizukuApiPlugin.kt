@@ -90,18 +90,37 @@ class ShizukuApiPlugin: FlutterPlugin, MethodCallHandler {
 
         // Request permission and listen for results
         // fix for https://github.com/santhosh-D-subramani/Shizuku-Plugin/issues/2
-        Shizuku.addRequestPermissionResultListener(object : Shizuku.OnRequestPermissionResultListener {
-            override fun onRequestPermissionResult(requestCode: Int, grantResult: Int) {
-                if (requestCode == code) {
-                    // Cleaning up listener once result is handled
-                    Shizuku.removeRequestPermissionResultListener(this)
-                    val isGranted = grantResult == PackageManager.PERMISSION_GRANTED
-                    result.success(isGranted)
-                }
-            }
-        })
+        synchronized(pendingPermissionResults) {
+            ensurePermissionListener()
+            pendingPermissionResults.getOrPut(code) { mutableListOf() }.add(result)
+        }
 
         Shizuku.requestPermission(code)
+    }
+
+    companion object {
+        // Results waiting for a permission answer, keyed by request code.
+        private val pendingPermissionResults = HashMap<Int, MutableList<Result>>()
+        private var permissionListenerAdded = false
+
+        // A single listener that is added once and never removed. Shizuku's
+        // removeRequestPermissionResultListener() calls removeIf() on a
+        // CopyOnWriteArrayList, which throws UnsupportedOperationException on
+        // Android 7.x and crashed the host app after the permission dialog.
+        private val permissionListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
+            val results = synchronized(pendingPermissionResults) {
+                pendingPermissionResults.remove(requestCode)
+            } ?: return@OnRequestPermissionResultListener
+            val isGranted = grantResult == PackageManager.PERMISSION_GRANTED
+            results.forEach { it.success(isGranted) }
+        }
+
+        private fun ensurePermissionListener() {
+            if (!permissionListenerAdded) {
+                Shizuku.addRequestPermissionResultListener(permissionListener)
+                permissionListenerAdded = true
+            }
+        }
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {

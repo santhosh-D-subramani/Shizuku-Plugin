@@ -2,6 +2,7 @@ group = "com.santhoshDsubramani.shizuku_api"
 version = "1.0"
 
 buildscript {
+    ext.kotlin_version = "2.2.20"
     repositories {
         google()
         mavenCentral()
@@ -9,6 +10,7 @@ buildscript {
 
     dependencies {
         classpath("com.android.tools.build:gradle:9.3.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     }
 }
 
@@ -21,6 +23,14 @@ allprojects {
 
 apply plugin: "com.android.library"
 
+// AGP 9 compiles Kotlin itself unless the host sets android.builtInKotlin=false
+// (Flutter's migrator does). Older AGP, or builtInKotlin=false, needs kotlin-android.
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize(".")[0].toInteger()
+def builtInKotlin = agpMajor >= 9 && project.findProperty("android.builtInKotlin")?.toString() != "false"
+if (!builtInKotlin) {
+    apply plugin: "kotlin-android"
+}
+
 android {
     if (project.android.hasProperty("namespace")) {
         namespace = "com.santhoshDsubramani.shizuku_api"
@@ -30,12 +40,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    if (project.extensions.findByName("kotlinOptions") != null) {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_11
-        }
     }
 
     sourceSets {
@@ -65,4 +69,11 @@ android {
             }
         }
     }
+}
+
+// Keep Kotlin's JVM target in line with compileOptions above, whichever way
+// Kotlin is compiled; otherwise it defaults to the JDK version and the build
+// fails with "Inconsistent JVM Target Compatibility".
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile).configureEach {
+    compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
 }
