@@ -9,6 +9,12 @@ class MethodChannelShizukuApi extends ShizukuApiPlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('shizuku_api');
 
+  /// The event channel that reports whether the Shizuku binder is alive.
+  @visibleForTesting
+  final binderStatusChannel = const EventChannel('shizuku_api/binder_status');
+
+  Stream<bool>? _binderStatus;
+
   @override
   Future<bool?> requestPermission() async {
     const int requestCode = 123;
@@ -34,6 +40,59 @@ class MethodChannelShizukuApi extends ShizukuApiPlatform {
     final output = await methodChannel
         .invokeMethod<String>('runCommand', {'command': command});
     return output;
+  }
+
+  @override
+  Future<bool?> shouldShowRequestPermissionRationale() {
+    return methodChannel
+        .invokeMethod<bool>('shouldShowRequestPermissionRationale');
+  }
+
+  @override
+  Future<bool?> isPreV11() {
+    return methodChannel.invokeMethod<bool>('isPreV11');
+  }
+
+  @override
+  Future<int?> getVersion() {
+    return methodChannel.invokeMethod<int>('getVersion');
+  }
+
+  @override
+  Future<int?> getServerPatchVersion() {
+    return methodChannel.invokeMethod<int>('getServerPatchVersion');
+  }
+
+  @override
+  Future<int?> getLatestServiceVersion() {
+    return methodChannel.invokeMethod<int>('getLatestServiceVersion');
+  }
+
+  @override
+  Future<int?> getUid() {
+    return methodChannel.invokeMethod<int>('getUid');
+  }
+
+  @override
+  Future<String?> getSELinuxContext() {
+    return methodChannel.invokeMethod<String>('getSELinuxContext');
+  }
+
+  @override
+  Future<bool?> isShizukuInstalled() {
+    return methodChannel.invokeMethod<bool>('isShizukuInstalled');
+  }
+
+  @override
+  Future<bool?> openShizukuApp() {
+    return methodChannel.invokeMethod<bool>('openShizukuApp');
+  }
+
+  @override
+  Stream<bool> get binderStatus {
+    return _binderStatus ??= binderStatusChannel
+        .receiveBroadcastStream()
+        .map((event) => event as bool);
   }
 
   // @override

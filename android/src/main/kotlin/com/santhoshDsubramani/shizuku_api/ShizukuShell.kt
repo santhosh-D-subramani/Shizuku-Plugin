@@ -1,13 +1,13 @@
 package com.santhoshDsubramani.shizuku_api
 
-import java.io.BufferedReader
-import java.io.InputStreamReader
+import java.io.InputStream
 
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
 
 class ShizukuShell(private var mCommand: String?) {
 
+    @Volatile
     private var mProcess: ShizukuRemoteProcess? = null
     private var mDir = "/"
 
@@ -18,26 +18,23 @@ class ShizukuShell(private var mCommand: String?) {
     fun execCommands(): String {
         val outputBuilder = StringBuilder()
         try {
-            // System.out.println("mCommand = " + mCommand);
             if (mCommand.isNullOrEmpty()) {
                 throw IllegalArgumentException("Command cannot be null or empty")
             }
 
-            mProcess = Shizuku.newProcess(arrayOf("sh", "-c", mCommand), null, mDir)
-            val mInput = BufferedReader(InputStreamReader(mProcess!!.inputStream))
-            val mError = BufferedReader(InputStreamReader(mProcess!!.errorStream))
+            val process = Shizuku.newProcess(arrayOf("sh", "-c", mCommand), null, mDir)
+            mProcess = process
 
-            var line: String?
-            // Read standard output
-            while (mInput.readLine().also { line = it } != null) {
-                outputBuilder.append(line).append("\n")
-            }
-            // Read error output
-            while (mError.readLine().also { line = it } != null) {
-                outputBuilder.append(line).append("\n")
-            }
+            // Drain stderr on its own thread. Reading it only after stdout ends
+            // hangs forever once the command fills the stderr pipe buffer.
+            var error = ""
+            val errorReader = Thread { error = readFully(process.errorStream) }
+            errorReader.start()
+            val output = readFully(process.inputStream)
+            errorReader.join()
 
-            mProcess!!.waitFor()
+            outputBuilder.append(output).append(error)
+            process.waitFor()
         } catch (e: IllegalArgumentException) {
             outputBuilder.append("Error: ").append(e.message)
         } catch (e: Exception) {
@@ -45,8 +42,19 @@ class ShizukuShell(private var mCommand: String?) {
             e.printStackTrace()
         } finally {
             mProcess?.destroy()
+            mProcess = null
         }
         return outputBuilder.toString().trim()
+    }
+
+    private fun readFully(stream: InputStream): String {
+        val builder = StringBuilder()
+        try {
+            stream.bufferedReader().forEachLine { builder.append(it).append("\n") }
+        } catch (e: Exception) {
+            // Stream closed by destroy(); keep what was read.
+        }
+        return builder.toString()
     }
 
     fun destroy() {

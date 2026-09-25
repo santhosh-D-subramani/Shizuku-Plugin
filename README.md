@@ -68,6 +68,16 @@ bool permissionGranted = await _shizukuApiPlugin.requestPermission();
 print(permissionGranted);
 ```
 
+Calling `requestPermission()` again while the dialog is open doesn't show a second dialog; all calls get the same answer.
+
+If the user denied the permission and chose "Don't ask again", `requestPermission()` returns false without a dialog. Detect that and send the user to Shizuku:
+
+```dart
+if (await _shizukuApiPlugin.shouldShowRequestPermissionRationale() ?? false) {
+  await _shizukuApiPlugin.openShizukuApp();
+}
+```
+
 ### 4. Run Commands
 Execute ADB shell commands:
 
@@ -78,4 +88,27 @@ Execute ADB shell commands:
 String command = 'pm uninstall --user 0 com.android.chrome';
 // Returns success if command executed and system app is uninstalled, or failure
 await _shizukuApiPlugin.runCommand(command);
+```
+
+Commands run on a background thread, so they don't block the UI.
+
+### 5. Shizuku Status and Info
+
+```dart
+// Is the Shizuku app installed? Open it so the user can start the service.
+bool installed = await _shizukuApiPlugin.isShizukuInstalled() ?? false;
+await _shizukuApiPlugin.openShizukuApp();
+
+// React when Shizuku starts or stops. Emits the current state first.
+_shizukuApiPlugin.binderStatus.listen((isRunning) {
+  print('Shizuku running: $isRunning');
+});
+
+// Server details (null if Shizuku isn't running)
+int? uid = await _shizukuApiPlugin.getUid(); // 0 = root, 2000 = adb
+int? version = await _shizukuApiPlugin.getVersion();
+int? latest = await _shizukuApiPlugin.getLatestServiceVersion();
+int? patch = await _shizukuApiPlugin.getServerPatchVersion();
+String? context = await _shizukuApiPlugin.getSELinuxContext();
+bool preV11 = await _shizukuApiPlugin.isPreV11() ?? false; // unsupported if true
 ```

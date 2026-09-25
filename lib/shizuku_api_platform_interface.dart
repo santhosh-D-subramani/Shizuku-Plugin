@@ -39,6 +39,48 @@ abstract class ShizukuApiPlatform extends PlatformInterface {
     throw UnimplementedError('runCommand() has not been implemented. $command');
   }
 
+  Future<bool?> shouldShowRequestPermissionRationale() {
+    throw UnimplementedError(
+        'shouldShowRequestPermissionRationale() has not been implemented.');
+  }
+
+  Future<bool?> isPreV11() {
+    throw UnimplementedError('isPreV11() has not been implemented.');
+  }
+
+  Future<int?> getVersion() {
+    throw UnimplementedError('getVersion() has not been implemented.');
+  }
+
+  Future<int?> getServerPatchVersion() {
+    throw UnimplementedError('getServerPatchVersion() has not been implemented.');
+  }
+
+  Future<int?> getLatestServiceVersion() {
+    throw UnimplementedError(
+        'getLatestServiceVersion() has not been implemented.');
+  }
+
+  Future<int?> getUid() {
+    throw UnimplementedError('getUid() has not been implemented.');
+  }
+
+  Future<String?> getSELinuxContext() {
+    throw UnimplementedError('getSELinuxContext() has not been implemented.');
+  }
+
+  Future<bool?> isShizukuInstalled() {
+    throw UnimplementedError('isShizukuInstalled() has not been implemented.');
+  }
+
+  Future<bool?> openShizukuApp() {
+    throw UnimplementedError('openShizukuApp() has not been implemented.');
+  }
+
+  Stream<bool> get binderStatus {
+    throw UnimplementedError('binderStatus has not been implemented.');
+  }
+
   // Future<List<String>?> runCommands(String command) {
   //   throw UnimplementedError(
   //       'runCommands() has not been implemented. $command');

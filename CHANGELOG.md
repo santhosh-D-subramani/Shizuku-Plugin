@@ -1,3 +1,13 @@
+## 1.3.0
+
+- `requestPermission()` no longer stacks permission dialogs: calls made while the dialog is open share its answer. A request older than 2 minutes with no answer is retried.
+- Fixed crash ("Reply already submitted") when `Shizuku.requestPermission()` threw after the call was queued; every reply is now sent at most once.
+- `checkPermission()` and `requestPermission()` return false when Shizuku isn't running, instead of throwing a `PlatformException`. Pending permission requests return false if Shizuku stops while the dialog is open.
+- `runCommand()` runs on a background thread instead of blocking the UI thread (ANR risk). Several commands can run at once; a new command no longer kills the one already running. Running commands are stopped when the engine detaches.
+- Fixed `runCommand()` hanging forever when a command wrote a lot to stderr.
+- New: `shouldShowRequestPermissionRationale()`, `isPreV11()`, `getVersion()`, `getServerPatchVersion()`, `getLatestServiceVersion()`, `getUid()`, `getSELinuxContext()`, `isShizukuInstalled()`, `openShizukuApp()`, and a `binderStatus` stream that reports when Shizuku starts or stops.
+- The plugin manifest declares a `<queries>` entry for the Shizuku package so `isShizukuInstalled()` and `openShizukuApp()` work on Android 11+.
+
 ## 1.2.4
 
 - Fixed crash on Android 7.x after answering the permission dialog (`UnsupportedOperationException` from `Shizuku.removeRequestPermissionResultListener`). The plugin now registers a single permission listener once and never removes it.
