@@ -37,11 +37,10 @@ class ShizukuShell(private var mCommand: String?) {
             process.waitFor()
         } catch (e: IllegalArgumentException) {
             outputBuilder.append("Error: ").append(e.message)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             outputBuilder.append("Unexpected error: ").append(e.message)
-            e.printStackTrace()
         } finally {
-            destroyProcess()
+            destroy()
         }
         return outputBuilder.toString().trim()
     }
@@ -56,18 +55,15 @@ class ShizukuShell(private var mCommand: String?) {
         return builder.toString()
     }
 
-    private fun destroyProcess() {
-        try {
-            mProcess?.destroy()
-        } catch (t: Throwable) {
-            // rikka.shizuku.ShizukuRemoteProcess.destroy() throws NullPointerException
-            // if the remote process or binder died before destroy() was called.
-        } finally {
-            mProcess = null
-        }
-    }
-
     fun destroy() {
-        destroyProcess()
+        // Take the process once so only one caller destroys it, and never let
+        // Shizuku's internal failures escape (dead binder, null remote, etc.)
+        val p = mProcess
+        mProcess = null
+        try {
+            p?.destroy()
+        } catch (t: Throwable) {
+            // Binder already dead; nothing left to clean up.
+        }
     }
 }
