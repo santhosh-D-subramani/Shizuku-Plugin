@@ -1,3 +1,8 @@
+## 1.3.1
+
+- Fixed crash (`NullPointerException` in `ShizukuRemoteProcess.destroy()`) when a command finishes or the remote binder disconnects before process destruction.
+- Hardened background command execution in `ShizukuApiPlugin` against uncaught worker thread exceptions.
+
 ## 1.3.0
 
 - `requestPermission()` no longer stacks permission dialogs: calls made while the dialog is open share its answer. A request older than 2 minutes with no answer is retried.

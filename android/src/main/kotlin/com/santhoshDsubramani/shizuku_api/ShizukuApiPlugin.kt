@@ -128,12 +128,17 @@ class ShizukuApiPlugin : FlutterPlugin, MethodCallHandler, EventChannel.StreamHa
         runningShells.add(shizukuShell)
         try {
             executor.execute {
-                val output = try {
-                    shizukuShell.execCommands()
-                } finally {
-                    runningShells.remove(shizukuShell)
+                try {
+                    val output = try {
+                        shizukuShell.execCommands()
+                    } finally {
+                        runningShells.remove(shizukuShell)
+                    }
+                    mainHandler.post { result.success(output) }
+                } catch (t: Throwable) {
+                    Log.w(TAG, "execCommands failed", t)
+                    mainHandler.post { result.error("COMMAND_FAILED", t.message, null) }
                 }
-                mainHandler.post { result.success(output) }
             }
         } catch (e: RejectedExecutionException) {
             runningShells.remove(shizukuShell)

@@ -41,8 +41,7 @@ class ShizukuShell(private var mCommand: String?) {
             outputBuilder.append("Unexpected error: ").append(e.message)
             e.printStackTrace()
         } finally {
-            mProcess?.destroy()
-            mProcess = null
+            destroyProcess()
         }
         return outputBuilder.toString().trim()
     }
@@ -57,7 +56,18 @@ class ShizukuShell(private var mCommand: String?) {
         return builder.toString()
     }
 
+    private fun destroyProcess() {
+        try {
+            mProcess?.destroy()
+        } catch (t: Throwable) {
+            // rikka.shizuku.ShizukuRemoteProcess.destroy() throws NullPointerException
+            // if the remote process or binder died before destroy() was called.
+        } finally {
+            mProcess = null
+        }
+    }
+
     fun destroy() {
-        mProcess?.destroy()
+        destroyProcess()
     }
 }

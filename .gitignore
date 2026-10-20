@@ -31,4 +31,4 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 /build/
 /coverage/
-*.apk
+*.apkexample/android/build/
